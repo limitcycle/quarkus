@@ -11,7 +11,7 @@ public class BookDTO {
   private String author;
 
   @Max(20)
-  private String descriptioin;
+  private String description;
 
   @NotBlank
   private String name;
@@ -20,12 +20,12 @@ public class BookDTO {
   @Min(0)
   private Integer status;
 
-  public String getDescriptioin() {
-    return descriptioin;
+  public String getDescription() {
+    return description;
   }
 
-  public void setDescriptioin(String descriptioin) {
-    this.descriptioin = descriptioin;
+  public void setDescription(String description) {
+    this.description = description;
   }
 
   public String getAuthor() {

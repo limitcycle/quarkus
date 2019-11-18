@@ -1,15 +1,9 @@
 package org.quarkus.sample.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Valid;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.quarkus.sample.DTO.BookDTO;
 import org.quarkus.sample.domain.Book;
@@ -46,12 +40,28 @@ public class BookController {
 
   @POST
   @Path("book")
+  @Consumes("application/json")
   public Book createBook(@Valid BookDTO bookDto) {
     Book book = new Book();
     book.setName(bookDto.getName());
     book.setAuthor(bookDto.getAuthor());
-    book.setDescription(bookDto.getDescriptioin());
+    book.setDescription(bookDto.getDescription());
     book.setStatus(bookDto.getStatus());
+
+    service.saveBook(book);
+    return book;
+  }
+
+  @PUT
+  @Path("book/{id}")
+  public Book updateBook(@PathParam("id") Long id, @Valid BookDTO bookDTO) {
+
+  }
+
+  @DELETE
+  @Path("book/{id}")
+  public Book deleteBookById(@PathParam("id") Long id) {
+    service.deleteBookById(id.longValue());
   }
 
 
