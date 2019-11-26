@@ -1,62 +1,66 @@
 package org.quarkus.sample.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
+
 import org.quarkus.sample.DTO.BookDTO;
 import org.quarkus.sample.domain.Book;
-import org.quarkus.sample.repository.BookRepository;
 
 @ApplicationScoped
 public class BookServiceImpl implements BookService {
 
-  @Inject
-  BookRepository bookRepository;
+    @Inject
+    DataService dataService;
 
+    @Override
+    @Transactional
+    public List<Book> findAllBooks() {
+        return dataService.findByNamedQuery(Book.class, Book.QUERY_ALL_BOOK);
+    }
 
-  @Override
-  @Transactional
-  public List<Book> findAllBooks() {
-    return bookRepository.findAll();
-  }
+    @Override
+    @Transactional
+    public Book getBookById(long id) {
+        Optional<Book> optionalBook = dataService.findById(Book.class, Long.valueOf(id));
+        return optionalBook.isPresent() ? optionalBook.get() : new Book();
+    }
 
-  @Override
-  @Transactional
-  public Book getBookById(long id) {
+    @Override
+    @Transactional
+    public Book saveBook(Book book) {
+        Optional<Book> optionBook = dataService.save(book);
+        return optionBook.isPresent() ? optionBook.get() : new Book();
+    }
 
-    return bookRepository.findById(id);
-  }
+    @Override
+    @Transactional
+    public Book updateBook(long id, BookDTO bookDTO) {
+        Book book = getBookById(id);
 
-  @Override
-  @Transactional
-  public Book saveBook(Book book) {
-    bookRepository.save(book);
-    return book;
-  }
+        book.setName(bookDTO.getName());
+        book.setAuthor(bookDTO.getAuthor());
+        book.setDescription(bookDTO.getDescription());
+        book.setStatus(bookDTO.getStatus());
 
-  @Override
-  @Transactional
-  public Book updateBook(long id, BookDTO bookDTO) {
-    Book book = getBookById(id);
-    saveBook(book);
-    return book;
-  }
+        Optional<Book> optionalBook = dataService.update(book);
+        return optionalBook.isPresent() ? optionalBook.get() : new Book();
+    }
 
-  @Override
-  @Transactional
-  public void deleteBookById(long id) {
-    Book book = getBookById(id);
-    bookRepository.deleteById(book);
-  }
+    @Override
+    @Transactional
+    public void deleteBookById(long id) {
+        Book book = getBookById(id);
+        dataService.delete(book);
+    }
 
-  @Override
-  public void deleteAllBooks() {
-
-  }
+    @Override
+    @Transactional
+    public void deleteAllBooks() {
+        dataService.findByNamedQuery(Book.class, Book.DELETE_ALL_BOOK);
+    }
 
 }
 
